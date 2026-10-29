@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>Audacity Label File Builder — CSV to standard TXT</title>
+  <meta name="description" content="Turn spreadsheet CSV rows into a standard Audacity label TXT file. Explicit time format, row validation, point and region labels. Browser-local text processing.">
+  <link rel="canonical" href="https://tatyanazaiceva76.github.io/audacity-label-file-builder/">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="masthead"><div class="wrap"><a href="#builder">Label File Builder</a><span>CSV → standard Audacity TXT</span></div></header>
+<main class="wrap">
+  <noscript><p>This converter needs JavaScript for browser-local validation and TXT creation. The format notes below remain readable without it.</p></noscript>
+  <section class="intro">
+    <p class="eyebrow">Spreadsheet rows, ready for a label track</p>
+    <h1>Build an Audacity label file</h1>
+    <p class="lead">Paste start time, end time and label text. Check the rows, then download a UTF‑8 <code>.txt</code> with real tab separators. No audio upload or account.</p>
+    <p class="scope-note">Prepares the documented standard text format only. It does not listen to audio, align labels to a recording, or create an Audacity project.</p>
+  </section>
+
+  <div class="workspace" id="builder">
+    <section class="input-panel" aria-labelledby="input-heading">
+      <div class="panel-heading"><span class="step">01</span><h2 id="input-heading">Your CSV</h2></div>
+      <form id="convert-form">
+        <label class="field-label" for="csv">CSV rows</label>
+        <textarea id="csv" rows="10" spellcheck="false" autocomplete="off" aria-describedby="csv-help" placeholder="start,end,label&#10;1.25,,Intro&#10;2.5,6.125,&quot;Scene, one&quot;"></textarea>
+        <p id="csv-help" class="help">Exactly three columns: <code>start</code>, <code>end</code>, <code>label</code>. An empty end creates a point label at the start. Quoted separators and doubled quotes are supported.</p>
+        <div class="options">
+          <label for="delimiter">CSV separator<select id="delimiter"><option value=",">Comma (,)</option><option value=";">Semicolon (;)</option><option value="tab">Tab</option></select></label>
+          <label for="time-mode">Input time<select id="time-mode"><option value="seconds">Seconds</option><option value="clock">MM:SS or H:MM:SS</option></select></label>
+          <label for="decimal">Decimal separator<select id="decimal"><option value=".">Dot (.)</option><option value=",">Comma (,)</option></select></label>
+        </div>
+        <label class="check"><input id="header" type="checkbox" checked> First row is start, end, label</label>
+        <p class="help">Choose the format explicitly; no automatic locale or time-unit guessing. With comma decimals and comma-separated CSV, quote the time fields.</p>
+        <div class="actions"><button id="build" type="submit" class="primary">Build label file</button><button id="example" type="button">Load example</button><button id="clear" type="button" class="quiet">Clear input</button></div>
+      </form>
+      <p id="status" class="status" role="status" aria-live="polite">No file has been built.</p>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+
+    <section class="output-panel" aria-labelledby="output-heading">
+      <div class="panel-heading"><span class="step">02</span><h2 id="output-heading">Check, then download</h2></div>
+      <div id="empty-output" class="empty-output"><div class="format-line"><span>start</span><i>tab</i><span>end</span><i>tab</i><span>label</span></div><p>Point label: start = end.<br>Region label: end ≥ start.</p><p>All rows must pass before a file is available. Changing any input hides the previous output.</p></div>
+      <div id="result" hidden>
+        <p id="result-summary" class="result-summary"></p>
+        <p class="preview-label">Standard TXT preview · times in seconds</p>
+        <pre id="preview" tabindex="0" aria-label="Label file preview"></pre>
+        <p id="preview-note" class="help"></p>
+        <button id="download" type="button" class="primary" disabled>Download audacity-labels.txt</button>
+        <p class="help">UTF‑8, no BOM; six decimal places, tab-separated fields and LF line endings. Row order, repeated labels and label text are retained.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="instructions" aria-labelledby="use-heading">
+    <h2 id="use-heading">Use the file in Audacity</h2>
+    <ol><li>Build the file here and inspect the first few rows.</li><li>Download the TXT. In Audacity, use <strong>File → Import → Labels</strong>, or the Label Editor’s import control.</li><li>Check a few point and region labels against your recording before using the whole track.</li></ol>
+    <p>This helper creates text only, not SRT/VTT subtitles or extended frequency-range labels. Existing spreadsheet and script workflows are alternatives; no unique compatibility or timing accuracy is promised.</p>
+  </section>
+  <section class="details" aria-label="Limits and privacy">
+    <div><h2>Explicit limits</h2><p>Up to 1,000 data rows and 256 KiB of UTF‑8 input; times from zero to 604,800 seconds, with at most six fractional digits. Labels must be nonblank and no longer than 200 UTF‑16 code units. Tabs, line breaks and control characters in labels are rejected, not silently removed.</p></div>
+    <div><h2>Your text stays here</h2><p>The application sends no input text over the network, uses no analytics or persistent storage, and does not open audio. Loading the page’s own files still uses the hosting service. The app does not save your text; keep your own copy before leaving.</p></div>
+  </section>
+</main>
+<footer class="wrap"><p>Independent format helper, not affiliated with Audacity. Format reference: <a href="https://manual.audacityteam.org/man/importing_and_exporting_labels.html">Importing and Exporting Labels</a>. Label limitations: <a href="https://manual.audacityteam.org/man/label_tracks.html">Label Tracks</a>.</p></footer>
+<script type="module" src="./app.mjs"></script>
+</body>
+</html>
